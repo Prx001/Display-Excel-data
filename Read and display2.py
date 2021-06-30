@@ -87,6 +87,12 @@ class Form(QWidget):
 	def setTableContent(self):
 		self.dataTable.setVerticalHeaderLabels(self.rows_list)
 		self.dataTable.setHorizontalHeaderLabels(self.columns_list)
+		self.fillTableCells()
+	def fillTableCells(self):
+		for j in range(1, self.COLUMNS + 1):
+			for i in range(2, self.ROWS + 1):
+				cell = self.excelContent.cell(i, j)
+				self.dataTable.setItem(i - 1, j - 1, QTableWidgetItem(str(cell.value)))
 	def moveToCenter(self):
 		qr = self.frameGeometry()
 		cp = QDesktopWidget().availableGeometry().center()
