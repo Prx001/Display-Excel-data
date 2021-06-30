@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QTableWidget, QTableWidgetItem, QGridLayout, QFileDialog, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QCheckBox, QLabel, QTableWidget, QTableWidgetItem, QGridLayout, QFileDialog, QDesktopWidget
 from pathlib import Path
+import string
 import openpyxl
 class Form(QWidget):
 	def __init__(self):
@@ -16,32 +17,7 @@ class Form(QWidget):
 		self.COLUMNS = 0
 		self.rows_list = []
 		self.columns_list = []
-		# dataTable.setRowCount(4)
-		# dataTable.setColumnCount(4)
-		# dataTable.setVerticalHeaderItem(0, QTableWidgetItem("Row 1"))
-		# dataTable.setVerticalHeaderItem(1, QTableWidgetItem("Row 2"))
-		# dataTable.setVerticalHeaderItem(2, QTableWidgetItem("Row 3"))
-		# dataTable.setVerticalHeaderItem(3, QTableWidgetItem("Row 4"))
-		# dataTable.setHorizontalHeaderItem(0, QTableWidgetItem("Column 1"))
-		# dataTable.setHorizontalHeaderItem(1, QTableWidgetItem("Column 2"))
-		# dataTable.setHorizontalHeaderItem(2, QTableWidgetItem("Column 3"))
-		# dataTable.setHorizontalHeaderItem(3, QTableWidgetItem("Column 4"))
-		# dataTable.setItem(0, 0, QTableWidgetItem("11"))
-		# dataTable.setItem(0, 1, QTableWidgetItem("12"))
-		# dataTable.setItem(0, 2, QTableWidgetItem("13"))
-		# dataTable.setItem(0, 3, QTableWidgetItem("14"))
-		# dataTable.setItem(1, 0, QTableWidgetItem("21"))
-		# dataTable.setItem(1, 1, QTableWidgetItem("22"))
-		# dataTable.setItem(1, 2, QTableWidgetItem("23"))
-		# dataTable.setItem(1, 3, QTableWidgetItem("24"))
-		# dataTable.setItem(2, 0, QTableWidgetItem("31"))
-		# dataTable.setItem(2, 1, QTableWidgetItem("32"))
-		# dataTable.setItem(2, 2, QTableWidgetItem("33"))
-		# dataTable.setItem(2, 3, QTableWidgetItem("34"))
-		# dataTable.setItem(3, 0, QTableWidgetItem("41"))
-		# dataTable.setItem(3, 1, QTableWidgetItem("42"))
-		# dataTable.setItem(3, 2, QTableWidgetItem("43"))
-		# dataTable.setItem(3, 3, QTableWidgetItem("44"))
+		self.excelContent = None
 		chooseFileButton = QPushButton("Choose file", self)
 		chooseFileButton.clicked.connect(self.chooseFile)
 		self.fileNameLabel = QLabel("File name", self)
@@ -55,25 +31,25 @@ class Form(QWidget):
 		filename = QFileDialog.getOpenFileName(self, "Choose a file to read data from", f"C:\\Users\\{user}", "*.xlsx")
 		if filename[0]:
 			FILE_DIR = filename[0]
-			excelContent = openpyxl.load_workbook(FILE_DIR)
-			excelContent = excelContent.active
-			self.ROWS = excelContent.max_row
-			self.COLUMNS = excelContent.max_column
-			self.setTable(self.ROWS, self.COLUMNS)
-			for i in range(1, self.ROWS+1):
-				row = excelContent.cell(i, 1)
-				self.rows_list.append(row.value)
-			for i in range(1, self.COLUMNS+1):
-				col = excelContent.cell(1, i)
-				self.columns_list.append(col.value)
+			self.excelContent = openpyxl.load_workbook(FILE_DIR)
+			self.excelContent = self.excelContent.active
+			self.ROWS = self.excelContent.max_row
+			self.COLUMNS = self.excelContent.max_column
+			self.setTableCounts()
 			self.setTableContent()
 			self.fileNameLabel.setText(str(FILE_DIR[::-1][:FILE_DIR[::-1].index("/"):][::-1]))
-	def setTable(self, rows, columns):
-		self.dataTable.setRowCount(int(rows))
-		self.dataTable.setColumnCount(int(columns))
+	def setTableCounts(self):
+		self.dataTable.setRowCount(self.ROWS)
+		self.dataTable.setColumnCount(self.COLUMNS)
 	def setTableContent(self):
-		self.dataTable.setVerticalHeaderLabels(self.rows_list)
-		self.dataTable.setHorizontalHeaderLabels(self.columns_list)
+		self.dataTable.setVerticalHeaderLabels([str(i) for i in range(1, self.ROWS+1)])
+		self.dataTable.setHorizontalHeaderLabels([str(i) for i in string.ascii_uppercase])
+		self.fillTableCells()
+	def fillTableCells(self):
+		for j in range(1, self.COLUMNS + 1):
+			for i in range(1, self.ROWS + 1):
+				cell = self.excelContent.cell(i, j)
+				self.dataTable.setItem(i - 1, j - 1, QTableWidgetItem(str(cell.value)))
 	def moveToCenter(self):
 		qr = self.frameGeometry()
 		cp = QDesktopWidget().availableGeometry().center()

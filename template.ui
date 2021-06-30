@@ -17,21 +17,14 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="4">
-       <widget class="QCheckBox" name="rowCheckBox">
+      <item row="0" column="3">
+       <widget class="QLabel" name="fileNameLabel">
         <property name="text">
-         <string>Row</string>
+         <string>File name</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="4">
-       <widget class="QCheckBox" name="columnCheckBox">
-        <property name="text">
-         <string>Column</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="6">
+      <item row="1" column="3">
        <widget class="QTableWidget" name="dataTable">
         <property name="minimumSize">
          <size>
@@ -164,27 +157,10 @@
         </item>
        </widget>
       </item>
-      <item row="0" column="4">
-       <widget class="QLabel" name="contentOnlyLabel">
-        <property name="text">
-         <string>Content only</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4">
+      <item row="2" column="2">
        <widget class="QPushButton" name="chooseFileButton">
         <property name="text">
          <string>Choose file</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="6">
-       <widget class="QLabel" name="fileNameLabel">
-        <property name="text">
-         <string>File name</string>
         </property>
        </widget>
       </item>
