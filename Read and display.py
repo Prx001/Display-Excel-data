@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QTableWidget, QTableWidgetItem, QGridLayout, QVBoxLayout, QFileDialog, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QTableWidget, QTableWidgetItem, QGridLayout, QFileDialog, QDesktopWidget
 from pathlib import Path
 import openpyxl
 class Form(QWidget):
