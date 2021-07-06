@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtCore import QSortFilterProxyModel
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QTableView, QCheckBox, QLabel, QLineEdit, QAction, \
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QTableView, QLabel, QLineEdit, QSpinBox, QAction, \
 	QFileDialog, QHBoxLayout, QVBoxLayout, QDesktopWidget
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from pathlib import Path
@@ -15,33 +15,21 @@ class MainWidget(QWidget):
 		self.item_model = QStandardItemModel()
 		self.table = QTableView()
 		self.filter = QSortFilterProxyModel()
-		self.row_filter_checkbox = QCheckBox("Apply filtering on rows")
-		self.row_filter_label = QLabel("Row:")
-		self.row_filter_line_edit = QLineEdit()
-		self.column_filter_checkbox = QCheckBox("Apply filtering on columns")
-		self.column_filter_label = QLabel("Column:")
-		self.column_filter_line_edit = QLineEdit()
+		self.column_label = QLabel("Column:")
+		self.spinbox = QSpinBox()
+		self.search_label = QLabel("Search:")
+		self.search_line_edit = QLineEdit()
 
 		self.initUI()
 
 	def initUI(self):
-		self.row_filter_checkbox.setChecked(False)
-		self.row_filter_label.setDisabled(True)
-		self.row_filter_line_edit.setDisabled(True)
-		self.column_filter_checkbox.setChecked(False)
-		self.column_filter_label.setDisabled(True)
-		self.column_filter_line_edit.setDisabled(True)
-		hbox1 = QHBoxLayout()
-		hbox2 = QHBoxLayout()
+		hbox = QHBoxLayout()
 		vbox = QVBoxLayout()
-		hbox1.addWidget(self.row_filter_checkbox)
-		hbox1.addWidget(self.row_filter_label)
-		hbox1.addWidget(self.row_filter_line_edit)
-		hbox2.addWidget(self.column_filter_checkbox)
-		hbox2.addWidget(self.column_filter_label)
-		hbox2.addWidget(self.column_filter_line_edit)
-		vbox.addLayout(hbox1)
-		vbox.addLayout(hbox2)
+		hbox.addWidget(self.column_label)
+		hbox.addWidget(self.spinbox)
+		hbox.addWidget(self.search_label)
+		hbox.addWidget(self.search_line_edit)
+		vbox.addLayout(hbox)
 		vbox.addWidget(self.table)
 		self.setLayout(vbox)
 
@@ -64,8 +52,8 @@ class Form(QMainWindow):
 		self.setWindowTitle("Data display")
 		self.central_widget = MainWidget()
 		# self.line_edit.textChanged.connect(self.filter.setFilterRegExp)
-		self.central_widget.row_filter_checkbox.stateChanged.connect(self.toggle_row_filter)
-		self.central_widget.column_filter_checkbox.stateChanged.connect(self.toggle_column_filter)
+		self.central_widget.search_line_edit.textChanged.connect(self.central_widget.filter.setFilterRegExp)
+		self.central_widget.search_line_edit.textChanged.connect(self.update_statusbar)
 		menu_bar = self.menuBar()
 		file_menu = menu_bar.addMenu("File")
 		open_action = QAction("Open", self)
@@ -74,22 +62,6 @@ class Form(QMainWindow):
 		file_menu.addAction(open_action)
 		self.setCentralWidget(self.central_widget)
 		self.show()
-
-	def toggle_row_filter(self):
-		if self.central_widget.row_filter_checkbox.isChecked():
-			self.central_widget.row_filter_label.setDisabled(False)
-			self.central_widget.row_filter_line_edit.setDisabled(False)
-		elif not self.central_widget.row_filter_checkbox.isChecked():
-			self.central_widget.row_filter_label.setDisabled(True)
-			self.central_widget.row_filter_line_edit.setDisabled(True)
-
-	def toggle_column_filter(self):
-		if self.central_widget.column_filter_checkbox.isChecked():
-			self.central_widget.column_filter_label.setDisabled(False)
-			self.central_widget.column_filter_line_edit.setDisabled(False)
-		elif not self.central_widget.column_filter_checkbox.isChecked():
-			self.central_widget.column_filter_label.setDisabled(True)
-			self.central_widget.column_filter_line_edit.setDisabled(True)
 
 	def choose_file(self):
 		user = str(Path.home()).removeprefix("C:\\Users\\")
@@ -118,9 +90,9 @@ class Form(QMainWindow):
 			for i in range(1, self.ROWS + 1):
 				cell = self.excel_content.cell(i, j)
 				self.central_widget.item_model.setItem(i - 1, j - 1, QStandardItem(str(cell.value)))
-		self.central_widget.filter.setSourceModel(self.item_model)
-		self.central_widget.filter.setFilterKeyColumn(2)
-		self.central_widget.table.setModel(self.filter)
+		self.central_widget.filter.setSourceModel(self.central_widget.item_model)
+		self.central_widget.filter.setFilterKeyColumn(self.central_widget.spinbox.value() - 1)
+		self.central_widget.table.setModel(self.central_widget.filter)
 
 	def move_to_center(self):
 		qr = self.frameGeometry()
