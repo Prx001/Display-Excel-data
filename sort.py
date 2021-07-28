@@ -1,4 +1,4 @@
-from PySide2 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 app = QtWidgets.QApplication([])
 window = QtWidgets.QWidget()
