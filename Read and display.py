@@ -34,7 +34,7 @@ class Form(QMainWindow):
 
 	def choose_file(self):
 		user = str(Path.home()).removeprefix("C:\\Users\\")
-		file_name = QFileDialog.getOpenFileName(self, "Choose a file to read data from", f"C:\\Users\\{user}", "*.xlsx")
+		file_name = QFileDialog.getOpenFileName(self, "Choose a file to read data from", f"C:\\Users\\{user}", "Excel Documents (*.xlsx)")
 		if file_name[0]:
 			file_dir = file_name[0]
 			self.excel_content = openpyxl.load_workbook(file_dir)
